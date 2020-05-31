@@ -5,6 +5,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping
 import org.springframework.messaging.handler.annotation.SendTo
 import org.springframework.stereotype.Controller
 import org.springframework.web.util.HtmlUtils
+import java.security.Principal
 
 
 @Controller
@@ -14,8 +15,8 @@ class MessagesController {
 
     @MessageMapping("/addmsg")
     @SendTo("/topic/demo")
-    fun greeting(message: String): String {
+    fun greeting(message: String, user: Principal): String {
         log.info("/app/addmsg ==> '$message' ==> /topic/demo)")
-        return "> " + HtmlUtils.htmlEscape(message)
+        return "> " + HtmlUtils.htmlEscape(user.name  + ": " + message)
     }
 }

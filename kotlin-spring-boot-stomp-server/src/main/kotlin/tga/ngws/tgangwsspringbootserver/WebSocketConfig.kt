@@ -42,6 +42,11 @@ class WebSocketStompEndpointsConfig : WebSocketMessageBrokerConfigurer {
     }
 }
 
+/**
+ * Many thanks to Anthony Raymond
+ * for the explanation of the security configuring:
+ * [https://stackoverflow.com/questions/45405332/websocket-authentication-and-authorization-in-spring]
+ */
 @Configuration
 class WebSocketAuthorizationSecurityConfig : AbstractSecurityWebSocketMessageBrokerConfigurer() {
     override fun configureInbound(messages: MessageSecurityMetadataSourceRegistry) {
