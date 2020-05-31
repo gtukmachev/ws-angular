@@ -1,1 +1,4 @@
+logging:
+    level:
+        tga.ngws.tgangwsspringbootserver: trace
 

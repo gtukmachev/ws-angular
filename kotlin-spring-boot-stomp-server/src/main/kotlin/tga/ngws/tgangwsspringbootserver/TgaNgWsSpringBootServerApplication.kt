@@ -4,8 +4,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
 @SpringBootApplication
-class TgaNgwsSpringBootServerApplication
+class TgaNgWsSpringBootServerApplication
 
 fun main(args: Array<String>) {
-    runApplication<TgaNgwsSpringBootServerApplication>(*args)
+    runApplication<TgaNgWsSpringBootServerApplication>(*args)
 }

@@ -8,8 +8,8 @@ export const myRxStompConfig: InjectableRxStompConfig = {
   // Headers
   // Typical keys: login, passcode, host
   connectHeaders: {
-    login: 'guest',
-    passcode: 'guest'
+    login: 'admin',
+    pass: 'pass'
   },
 
   // How often to heartbeat?
@@ -20,7 +20,7 @@ export const myRxStompConfig: InjectableRxStompConfig = {
   // Wait in milliseconds before attempting auto reconnect
   // Set to 0 to disable
   // Typical value 500 (500 milli seconds)
-  reconnectDelay: 0,
+  reconnectDelay: 3000,
 
   // Will log diagnostics on console
   // It can be quite verbose, not recommended in production

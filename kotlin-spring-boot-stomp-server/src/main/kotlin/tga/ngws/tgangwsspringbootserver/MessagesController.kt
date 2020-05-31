@@ -10,15 +10,12 @@ import org.springframework.web.util.HtmlUtils
 @Controller
 class MessagesController {
 
-    val log = LoggerFactory.getLogger(MessagesController::class.java)
+    private val log = LoggerFactory.getLogger(MessagesController::class.java)
 
     @MessageMapping("/addmsg")
     @SendTo("/topic/demo")
     fun greeting(message: String): String {
-        log.info("/queue/addmsg ->greeting(message = '$message')")
-
-        Thread.sleep(1000) // simulated delay
-
+        log.info("/app/addmsg ==> '$message' ==> /topic/demo)")
         return "> " + HtmlUtils.htmlEscape(message)
     }
 }

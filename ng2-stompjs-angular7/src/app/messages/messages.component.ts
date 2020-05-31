@@ -27,7 +27,7 @@ export class MessagesComponent implements OnInit, OnDestroy  {
 
   onSendMessage() {
     const message = `Message generated at ${new Date()}`;
-    this.rxStompService.publish({destination: '/queue/addmsg', body: message});
+    this.rxStompService.publish({destination: '/app/addmsg', body: message});
   }
 
 
