@@ -14,18 +14,17 @@ class MessagesController {
 
     private val log = LoggerFactory.getLogger(MessagesController::class.java)
 
-    @MessageMapping("/addmsg")
-    @SendTo("/topic/demo")
+    @MessageMapping("/topic/chat/add")
+    @SendTo("/topic/chat/messages")
     fun greeting(message: String, user: Principal): String {
         log.info("/app/addmsg ==> '$message' ==> /topic/demo)")
         return "> " + HtmlUtils.htmlEscape(user.name  + ": " + message)
     }
 
-    @SubscribeMapping("/demo") //actually, the full destination name (that client is using) is '/topic/demo' or '/app/demo'
-    fun onSubscribe_Topic__Demo(user: Principal): String {
-        log.trace("onSubscribe_Topic__Demo()")
-        return "Server message > you've been subscribed to '/topic/demo'!"
+    @SubscribeMapping("/topic/chat/messages")
+    fun onSubscribe(user: Principal): String {
+        log.trace("onSubscribe()")
+        return "Server message > you've been subscribed to '/topic/chat/messages'!"
     }
-
 
 }
