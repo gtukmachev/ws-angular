@@ -7,12 +7,14 @@ import {myRxStompConfig} from './my-rx-stomp.config';
 import {MessagesComponent} from './chat/messages/messages.component';
 import {ChatPanelComponent} from './chat/chat-panel/chat-panel.component';
 import {FormsModule} from "@angular/forms";
+import {SimpleMessageComponent} from './chat/simple-message/simple-message.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     MessagesComponent,
-    ChatPanelComponent
+    ChatPanelComponent,
+    SimpleMessageComponent
   ],
   imports: [
     BrowserModule,

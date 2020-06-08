@@ -5,7 +5,6 @@ import org.springframework.messaging.handler.annotation.MessageMapping
 import org.springframework.messaging.handler.annotation.SendTo
 import org.springframework.messaging.simp.annotation.SubscribeMapping
 import org.springframework.stereotype.Controller
-import org.springframework.web.util.HtmlUtils
 import java.security.Principal
 
 
@@ -16,9 +15,12 @@ class MessagesController {
 
     @MessageMapping("/topic/chat/add")
     @SendTo("/topic/chat/messages")
-    fun greeting(message: String, user: Principal): String {
-        log.info("/app/addmsg ==> '$message' ==> /topic/demo)")
-        return "> " + HtmlUtils.htmlEscape(user.name  + ": " + message)
+    fun greeting(msgText: String, principal: Principal): Map<String, String> {
+        log.info("/topic/chat/add <== {{}:'{}'} ==> /topic/chat/messages)", principal.name, msgText)
+        return mapOf(
+                "user" to principal.name,
+                "msg" to msgText
+        )
     }
 
     @SubscribeMapping("/topic/chat/messages")
