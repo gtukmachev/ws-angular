@@ -1,7 +1,8 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {RxStompService} from '@stomp/ng2-stompjs';
 import {Message} from '@stomp/stompjs';
 import {Subscription} from 'rxjs';
+import {NgForm} from "@angular/forms";
 
 @Component({
   selector: 'app-messages',
@@ -9,6 +10,8 @@ import {Subscription} from 'rxjs';
   styleUrls: ['./messages.component.css']
 })
 export class MessagesComponent implements OnInit, OnDestroy  {
+
+  @Input() currentUser: String;
 
   private topicSubscription: Subscription;
   public receivedMessages: string[] = [];
@@ -25,10 +28,8 @@ export class MessagesComponent implements OnInit, OnDestroy  {
     this.topicSubscription.unsubscribe();
   }
 
-  onSendMessage() {
-    const message = `Message generated at ${new Date()}`;
-    this.rxStompService.publish({destination: '/topic/chat/add', body: message});
+  submitMessage(messageForm: NgForm) {
+    this.rxStompService.publish({destination: '/topic/chat/add', body: messageForm.value.messageText});
   }
-
 
 }

@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {Subject} from "rxjs";
+import {NgForm} from "@angular/forms";
 
 @Component({
   selector: 'app-chat-panel',
@@ -20,7 +21,7 @@ export class ChatPanelComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  onLoginSubmit(loginForm) {
+  onLoginSubmit(loginForm: NgForm) {
     this.login$.next(loginForm.value.userName)
   }
 

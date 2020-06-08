@@ -1,0 +1,12 @@
+<div id="messages">
+  <form #messageForm="ngForm" (ngSubmit)="submitMessage(messageForm)" novalidate>
+    <label for="messageText">{{currentUser}}</label>
+    <input id="messageText" name="messageText" ngModel required/>
+    <input type="submit" [disabled]="messageForm.invalid"/>
+  </form>
+  <br/>
+  <ol>
+    <!-- we will use Angular binding to populate list of messages -->
+    <li class="message" *ngFor="let message of receivedMessages">{{message}}</li>
+  </ol>
+</div>

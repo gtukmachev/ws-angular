@@ -4,7 +4,7 @@ import {NgModule} from '@angular/core';
 import {AppComponent} from './app.component';
 import {InjectableRxStompConfig, RxStompService, rxStompServiceFactory} from '@stomp/ng2-stompjs';
 import {myRxStompConfig} from './my-rx-stomp.config';
-import {MessagesComponent} from './messages/messages.component';
+import {MessagesComponent} from './chat/messages/messages.component';
 import {ChatPanelComponent} from './chat/chat-panel/chat-panel.component';
 import {FormsModule} from "@angular/forms";
 

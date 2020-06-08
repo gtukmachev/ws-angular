@@ -1,6 +1,7 @@
 <div *ngIf="(login$ | async) as login; else loginPanel">
-  <div>messages</div>
-  <div><span>{{login}}:</span>&nbsp;_________</div>
+  <div>
+    <app-messages [currentUser]="login"></app-messages>
+  </div>
   <div>
     <button (click)="logOut()">log out</button>
   </div>
