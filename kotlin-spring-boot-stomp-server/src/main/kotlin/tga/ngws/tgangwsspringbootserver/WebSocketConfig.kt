@@ -72,7 +72,7 @@ class WebSocketAuthenticatorService {
         if (password.isNullOrBlank()) throw AuthenticationCredentialsNotFoundException("Password was null or empty.")
 
         // Add your own logic for retrieving user in fetchUserFromDb()
-        if ( !(username == "admin" && password == "pass") ) {
+        if ( !(/*username == "admin" &&*/ password == "pass") ) {
             throw BadCredentialsException("Bad credentials for user $username")
         }
 

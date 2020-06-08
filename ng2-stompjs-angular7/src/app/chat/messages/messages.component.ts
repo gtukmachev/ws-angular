@@ -1,5 +1,5 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {RxStompService} from '@stomp/ng2-stompjs';
+import {StompRService} from '@stomp/ng2-stompjs';
 import {Message} from '@stomp/stompjs';
 import {Subscription} from 'rxjs';
 import {NgForm} from "@angular/forms";
@@ -18,10 +18,10 @@ export class MessagesComponent implements OnInit, OnDestroy  {
   public receivedMessages: IChatMessage[] = [];
   messageInputText: string = "";
 
-  constructor(private rxStompService: RxStompService) { }
+  constructor(private _stompService: StompRService) { }
 
   ngOnInit(): void {
-    this.topicSubscription = this.rxStompService.watch('/topic/chat/messages')
+    this.topicSubscription = this._stompService.watch('/topic/chat/messages')
       .subscribe((message: Message) => {
         let chatMessage: IChatMessage;
         try {
@@ -40,7 +40,7 @@ export class MessagesComponent implements OnInit, OnDestroy  {
   }
 
   submitMessage(messageForm: NgForm) {
-    this.rxStompService.publish({destination: '/topic/chat/add', body: this.messageInputText});
+    this._stompService.publish({destination: '/topic/chat/add', body: this.messageInputText});
     this.messageInputText = "";
   }
 

@@ -7,6 +7,6 @@
   <br/>
   <ul>
     <!-- we will use Angular binding to populate list of messages -->
-    <li class="chat-message-item" *ngFor="let msgItem of receivedMessages"><app-simple-message [msg]="msgItem"></app-simple-message> </li>
+    <li class="chat-message-item" *ngFor="let msgItem of receivedMessages?.reverse()"><app-simple-message [msg]="msgItem"></app-simple-message> </li>
   </ul>
 </div>
