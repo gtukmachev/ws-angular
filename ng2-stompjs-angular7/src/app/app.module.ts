@@ -5,14 +5,18 @@ import {AppComponent} from './app.component';
 import {InjectableRxStompConfig, RxStompService, rxStompServiceFactory} from '@stomp/ng2-stompjs';
 import {myRxStompConfig} from './my-rx-stomp.config';
 import {MessagesComponent} from './messages/messages.component';
+import {ChatPanelComponent} from './chat/chat-panel/chat-panel.component';
+import {FormsModule} from "@angular/forms";
 
 @NgModule({
   declarations: [
     AppComponent,
-    MessagesComponent
+    MessagesComponent,
+    ChatPanelComponent
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    FormsModule
   ],
   providers: [
     { provide: InjectableRxStompConfig, useValue: myRxStompConfig },

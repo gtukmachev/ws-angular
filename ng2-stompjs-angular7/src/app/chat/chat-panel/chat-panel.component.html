@@ -1,0 +1,18 @@
+<div *ngIf="(login$ | async) as login; else loginPanel">
+  <div>messages</div>
+  <div><span>{{login}}:</span>&nbsp;_________</div>
+  <div>
+    <button (click)="logOut()">log out</button>
+  </div>
+</div>
+
+<ng-template #loginPanel>
+  <div>
+    <form #loginForm="ngForm" (ngSubmit)="onLoginSubmit(loginForm)" novalidate>
+      <label for="userName">User name:</label>
+      <input id="userName" name="userName" ngModel required/>
+      <input type="submit" [disabled]="loginForm.invalid"/>
+    </form>
+  </div>
+</ng-template>
+
