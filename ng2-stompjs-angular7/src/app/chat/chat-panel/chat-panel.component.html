@@ -2,8 +2,8 @@
   <div>
     <app-messages [currentUser]="login"></app-messages>
   </div>
-  <div>
-    <button (click)="logOut()">log out</button>
+  <div class="chat-logout-btn">
+    <button (click)="logOut()">{{login}} :: log out</button>
   </div>
 </div>
 

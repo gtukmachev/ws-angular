@@ -1,7 +1,6 @@
 <div id="messages">
   <form #messageForm="ngForm" (ngSubmit)="submitMessage(messageForm)" novalidate>
-    <label for="messageText">{{currentUser}}</label>
-    <input id="messageText" name="messageText" [(ngModel)]="messageInputText" required/>
+    <input id="messageText" name="messageText" [(ngModel)]="messageInputText" required autofocus/>
     <input type="submit" [disabled]="messageForm.invalid"/>
   </form>
   <br/>

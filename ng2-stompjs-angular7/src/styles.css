@@ -12,3 +12,8 @@ ul, ol, li {
 .chat-dt {
   font-style: italic;
 }
+
+.chat-logout-btn {
+  text-align: right;
+}
+
