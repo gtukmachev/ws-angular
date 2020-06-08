@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {NgForm} from "@angular/forms";
 import * as SockJS from 'sockjs-client';
 import {StompRService} from "@stomp/ng2-stompjs";
+import {UserServiceService} from "../../services/user-service.service";
 
 @Component({
   selector: 'app-login-panel',
@@ -10,7 +11,7 @@ import {StompRService} from "@stomp/ng2-stompjs";
 })
 export class LoginPanelComponent implements OnInit {
 
-  constructor(private stompService: StompRService) { }
+  constructor(private stompService: StompRService, private userServiceService: UserServiceService) { }
 
   ngOnInit(): void {
   }
@@ -18,6 +19,9 @@ export class LoginPanelComponent implements OnInit {
   onLoginSubmit(loginForm: NgForm) {
     let userName = loginForm.value.userName;
     let password = loginForm.value.userPass;
+
+    this.userServiceService.userName = userName
+    this.userServiceService.userPass = password
 
     if (userName == null) {
       this.stompService.disconnect();

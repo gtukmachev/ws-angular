@@ -4,6 +4,7 @@ import {Message} from '@stomp/stompjs';
 import {Subscription} from 'rxjs';
 import {NgForm} from "@angular/forms";
 import {IChatMessage} from "../model/chat-message";
+import {UserServiceService} from "../../services/user-service.service";
 
 @Component({
   selector: 'app-messages',
@@ -18,10 +19,11 @@ export class MessagesComponent implements OnInit, OnDestroy  {
   public receivedMessages: IChatMessage[] = [];
   messageInputText: string = "";
 
-  constructor(private _stompService: StompRService) { }
+  constructor(private _stompService: StompRService, private userServiceService: UserServiceService) { }
 
   ngOnInit(): void {
-    this.topicSubscription = this._stompService.watch('/topic/chat/messages')
+    let topicName = "/topic/chat/messages/" + this.userServiceService.userPass;
+    this.topicSubscription = this._stompService.watch(topicName)
       .subscribe((message: Message) => {
         let chatMessage: IChatMessage;
         try {
@@ -41,7 +43,8 @@ export class MessagesComponent implements OnInit, OnDestroy  {
   }
 
   submitMessage(messageForm: NgForm) {
-    this._stompService.publish({destination: '/topic/chat/add', body: this.messageInputText});
+    let queueName = "/queue/chat/messages/" + this.userServiceService.userPass;
+    this._stompService.publish({destination: queueName, body: this.messageInputText});
     this.messageInputText = "";
   }
 
