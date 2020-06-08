@@ -5,6 +5,7 @@ import {Subscription} from 'rxjs';
 import {NgForm} from "@angular/forms";
 import {IChatMessage} from "../model/chat-message";
 import {UserServiceService} from "../../services/user-service.service";
+import {Location} from '@angular/common';
 
 @Component({
   selector: 'app-messages',
@@ -19,10 +20,30 @@ export class MessagesComponent implements OnInit, OnDestroy  {
   public receivedMessages: IChatMessage[] = [];
   messageInputText: string = "";
 
-  constructor(private _stompService: StompRService, private userServiceService: UserServiceService) { }
+  private chatName: string = ""
+
+  constructor(
+    private _stompService: StompRService,
+    private userServiceService: UserServiceService,
+    private location: Location
+  ) { }
+
+  private trimChar(st: string, charToRemove: string) {
+    while(st.charAt(0)==charToRemove) {
+      st = st.substring(1);
+    }
+
+    while(st.charAt(st.length-1)==charToRemove) {
+      st = st.substring(0,st.length-1);
+    }
+
+    return st;
+  }
 
   ngOnInit(): void {
-    let topicName = "/topic/chat/messages/" + this.userServiceService.userPass;
+    this.chatName = this.trimChar(location.pathname,"/");
+
+    let topicName = "/topic/chat/messages/" + this.chatName + "/" + this.userServiceService.userPass;
     this.topicSubscription = this._stompService.watch(topicName)
       .subscribe((message: Message) => {
         let chatMessage: IChatMessage;
@@ -43,7 +64,7 @@ export class MessagesComponent implements OnInit, OnDestroy  {
   }
 
   submitMessage(messageForm: NgForm) {
-    let queueName = "/queue/chat/messages/" + this.userServiceService.userPass;
+    let queueName = "/queue/chat/messages/"+ this.chatName + "/" + this.userServiceService.userPass;
     this._stompService.publish({destination: queueName, body: this.messageInputText});
     this.messageInputText = "";
   }
