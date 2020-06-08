@@ -8,3 +8,7 @@ ul, ol, li {
 .chat-user-name {
   font-weight: bold;
 }
+
+.chat-dt {
+  font-style: italic;
+}

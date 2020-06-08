@@ -26,9 +26,10 @@ export class MessagesComponent implements OnInit, OnDestroy  {
         let chatMessage: IChatMessage;
         try {
           chatMessage = JSON.parse(message.body) as IChatMessage;
+          chatMessage.dt = new Date();
         } catch (e) {
           console.log(e)
-          chatMessage = {user: "???", msg: "<message unrecognied>"}
+          chatMessage = {user: "???", msg: "<message unrecognied>", dt: new Date()}
         }
 
         this.receivedMessages.push(chatMessage);
