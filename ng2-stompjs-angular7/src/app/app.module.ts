@@ -7,13 +7,17 @@ import {MessagesComponent} from './chat/messages/messages.component';
 import {ChatPanelComponent} from './chat/chat-panel/chat-panel.component';
 import {FormsModule} from "@angular/forms";
 import {SimpleMessageComponent} from './chat/simple-message/simple-message.component';
+import {LoginPanelComponent} from './chat/login-panel/login-panel.component';
+import {ChatConnectionStatusComponent} from './chat/chat-connection-status/chat-connection-status.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     MessagesComponent,
     ChatPanelComponent,
-    SimpleMessageComponent
+    SimpleMessageComponent,
+    LoginPanelComponent,
+    ChatConnectionStatusComponent
   ],
   imports: [
     BrowserModule,

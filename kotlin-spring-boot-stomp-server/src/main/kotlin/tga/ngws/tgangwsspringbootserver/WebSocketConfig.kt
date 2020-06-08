@@ -14,7 +14,6 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor
 import org.springframework.messaging.support.ChannelInterceptor
 import org.springframework.messaging.support.MessageHeaderAccessor
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException
-import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
@@ -72,14 +71,16 @@ class WebSocketAuthenticatorService {
         if (password.isNullOrBlank()) throw AuthenticationCredentialsNotFoundException("Password was null or empty.")
 
         // Add your own logic for retrieving user in fetchUserFromDb()
-        if ( !(/*username == "admin" &&*/ password == "pass") ) {
+/*
+        if ( !(username == "admin" && password == "pass") ) {
             throw BadCredentialsException("Bad credentials for user $username")
         }
+*/
 
         // null credentials, we do not pass the password along
         return UsernamePasswordAuthenticationToken(
                 username,
-                null,
+                password,
                 listOf(GrantedAuthority { "USER" }) // MUST provide at least one role
         )
     }

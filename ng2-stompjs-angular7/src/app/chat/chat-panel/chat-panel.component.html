@@ -1,19 +1,12 @@
-<div *ngIf="(login$ | async) as login; else loginPanel">
-  <div>
-    <app-messages [currentUser]="login"></app-messages>
-  </div>
+<div *ngIf="stompService.active else defaultSection">
+  <app-chat-connection-status [connectionStatus]="(stompService.state | async)"></app-chat-connection-status>
+  <app-messages></app-messages>
   <div class="chat-logout-btn">
-    <button (click)="logOut()">{{login}} :: log out</button>
+    <button (click)="logOut()">log out</button>
   </div>
 </div>
 
-<ng-template #loginPanel>
-  <div>
-    <form #loginForm="ngForm" (ngSubmit)="onLoginSubmit(loginForm)" novalidate>
-      <label for="userName">User name:</label>
-      <input id="userName" name="userName" ngModel required/>
-      <input type="submit" [disabled]="loginForm.invalid"/>
-    </form>
-  </div>
+<ng-template #defaultSection>
+  <app-login-panel></app-login-panel>
 </ng-template>
 
