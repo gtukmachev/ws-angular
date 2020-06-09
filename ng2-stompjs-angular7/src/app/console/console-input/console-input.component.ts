@@ -1,4 +1,4 @@
-import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 
 @Component({
   selector: 'app-console-input',
@@ -9,6 +9,7 @@ export class ConsoleInputComponent implements OnInit {
   commandInputText: string = "";
 
   @Output() onSubmit = new EventEmitter<string>();
+  @Input() mode: string;
 
   constructor() { }
 

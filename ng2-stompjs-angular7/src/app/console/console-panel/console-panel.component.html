@@ -1,3 +1,5 @@
 <p><app-console-log [logs]="logs"></app-console-log></p>
-<div><app-console-input (onSubmit)="onCommandSubmit($event)" ></app-console-input></div>
+<div>
+  <app-console-input [mode]="mode" (onSubmit)="onCommandSubmit($event)"></app-console-input>
+</div>
 
