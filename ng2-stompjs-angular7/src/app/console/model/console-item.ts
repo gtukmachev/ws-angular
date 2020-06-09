@@ -23,3 +23,10 @@ export class UnknownCommandConsoleItem extends ConsoleItem {
     this.type = "UnknownCommandConsoleItem";
   }
 }
+
+export class SimpleCommandConsoleItem extends ConsoleItem {
+  constructor(public command: string, public args: string[]) {
+    super();
+    this.type = "SimpleCommandConsoleItem";
+  }
+}

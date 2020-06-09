@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {ConsoleItem, TextConsoleItem, UnknownCommandConsoleItem} from "../model/console-item";
+import {ConsoleItem, SimpleCommandConsoleItem, TextConsoleItem, UnknownCommandConsoleItem} from "../model/console-item";
 
 @Component({
   selector: 'app-console-log',
@@ -21,5 +21,9 @@ export class ConsoleLogComponent implements OnInit {
 
   unknownCommandConsoleItem(anItem: ConsoleItem): UnknownCommandConsoleItem {
     if (anItem.type == "UnknownCommandConsoleItem") return anItem as UnknownCommandConsoleItem; return null;
+  }
+
+  simpleCommandConsoleItem(anItem: ConsoleItem): SimpleCommandConsoleItem {
+    if (anItem.type == "SimpleCommandConsoleItem") return anItem as SimpleCommandConsoleItem; return null;
   }
 }

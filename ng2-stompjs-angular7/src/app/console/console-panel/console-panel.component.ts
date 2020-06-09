@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ConsoleItem, TextConsoleItem, UnknownCommandConsoleItem} from "../model/console-item";
-import {CommandProcessor} from "../command-processors/command-processor";
+import {CommandProcessor, SimpleCommandsProcessor} from "../command-processors/command-processor";
 
 @Component({
   selector: 'app-console-panel',
@@ -13,20 +13,20 @@ export class ConsolePanelComponent implements OnInit {
   commandProcessors: CommandProcessor[] = [];
 
   constructor() {
-    //this.commandProcessors.push()
+    this.commandProcessors.push(new SimpleCommandsProcessor())
   }
 
   ngOnInit(): void {
-    this.logs.push( new TextConsoleItem("Welcome to Secure Caht") )
-    this.logs.push( new TextConsoleItem("type 'login <name>'...") )
+    this.logs.push( new TextConsoleItem("Welcome to Secure Chat") )
+    this.logs.push( new TextConsoleItem("type 'join <name> [<chat>]' to start chatting...") )
   }
 
   onCommandSubmit($event: string) {
     for (let proccessor of this.commandProcessors) {
-      let result = proccessor.process($event)
-      if (result) {
-        this.logs.push(result)
-        return
+      let results: ConsoleItem[] = proccessor.process($event)
+      if (results) {
+        for(let item of results) this.logs.push(item);
+        return;
       }
     }
 
