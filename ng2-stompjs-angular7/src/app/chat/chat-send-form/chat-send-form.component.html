@@ -1,0 +1,4 @@
+<form #messageForm="ngForm" (ngSubmit)="submitMessage()" novalidate>
+  <input id="messageText" name="messageText" [(ngModel)]="messageInputText" required autofocus/>
+  <input type="submit" [disabled]="messageForm.invalid"/>
+</form>

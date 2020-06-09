@@ -20,8 +20,7 @@ export class LoginPanelComponent implements OnInit {
     let userName = loginForm.value.userName;
     let password = loginForm.value.userPass;
 
-    this.userServiceService.userName = userName
-    this.userServiceService.userPass = password
+    this.userServiceService.updateUser(userName, password);
 
     if (userName == null) {
       this.stompService.disconnect();

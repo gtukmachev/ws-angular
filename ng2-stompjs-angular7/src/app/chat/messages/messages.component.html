@@ -1,11 +1,5 @@
-<div id="messages">
-  <form #messageForm="ngForm" (ngSubmit)="submitMessage(messageForm)" novalidate>
-    <input id="messageText" name="messageText" [(ngModel)]="messageInputText" required autofocus/>
-    <input type="submit" [disabled]="messageForm.invalid"/>
-  </form>
-  <br/>
-  <ul>
-    <!-- we will use Angular binding to populate list of messages -->
-    <li class="chat-message-item" *ngFor="let msgItem of receivedMessages?.reverse()"><app-simple-message [msg]="msgItem"></app-simple-message> </li>
-  </ul>
-</div>
+<ul>
+  <li class="chat-message-item" *ngFor="let msgItem of receivedMessages?.reverse()">
+    <app-simple-message [msg]="msgItem"></app-simple-message>
+  </li>
+</ul>

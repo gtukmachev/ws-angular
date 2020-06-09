@@ -9,6 +9,7 @@ import {FormsModule} from "@angular/forms";
 import {SimpleMessageComponent} from './chat/simple-message/simple-message.component';
 import {LoginPanelComponent} from './chat/login-panel/login-panel.component';
 import {ChatConnectionStatusComponent} from './chat/chat-connection-status/chat-connection-status.component';
+import {ChatSendFormComponent} from './chat/chat-send-form/chat-send-form.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +18,8 @@ import {ChatConnectionStatusComponent} from './chat/chat-connection-status/chat-
     ChatPanelComponent,
     SimpleMessageComponent,
     LoginPanelComponent,
-    ChatConnectionStatusComponent
+    ChatConnectionStatusComponent,
+    ChatSendFormComponent
   ],
   imports: [
     BrowserModule,
