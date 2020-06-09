@@ -1,3 +1,5 @@
+import {IChatMessage} from "./chat-message";
+
 export class ConsoleItem {
 
   public dt: Date = new Date();
@@ -28,5 +30,12 @@ export class SimpleCommandConsoleItem extends ConsoleItem {
   constructor(public command: string, public args: string[]) {
     super();
     this.type = "SimpleCommandConsoleItem";
+  }
+}
+
+export class ChatConsoleItem extends ConsoleItem {
+  constructor(public message: IChatMessage) {
+    super();
+    this.type = "ChatConsoleItem";
   }
 }

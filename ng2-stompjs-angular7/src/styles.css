@@ -18,6 +18,11 @@ body.console {
   color: #c2d5c2;
 }
 
+.user {
+  color: #7fd4ff;
+  font-weight: bold;
+}
+
 .console-form {
   display: inline-block;
   width: 100%;

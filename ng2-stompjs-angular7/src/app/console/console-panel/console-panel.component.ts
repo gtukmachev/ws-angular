@@ -1,5 +1,11 @@
 import {Component, OnInit} from '@angular/core';
-import {ConsoleItem, SimpleCommandConsoleItem, TextConsoleItem, UnknownCommandConsoleItem} from "../model/console-item";
+import {
+  ChatConsoleItem,
+  ConsoleItem,
+  SimpleCommandConsoleItem,
+  TextConsoleItem,
+  UnknownCommandConsoleItem
+} from "../model/console-item";
 import {CommandProcessor, SimpleCommandsProcessor} from "../command-processors/command-processor";
 import {ChatService} from "../../services/chat.service";
 import {IChatMessage} from "../model/chat-message";
@@ -74,10 +80,10 @@ export class ConsolePanelComponent implements OnInit {
     let chatMessage: IChatMessage;
     try {
       chatMessage = JSON.parse(incomeMessage.body) as IChatMessage;
-      this.logs.push(new TextConsoleItem(chatMessage.user + ": " + chatMessage.msg))
+      this.logs.push(new ChatConsoleItem(chatMessage))
     } catch (e) {
       console.log(e)
-      this.logs.push(new TextConsoleItem("???: message unrecognized"))
+      this.logs.push(new ChatConsoleItem({user: "???", msg: "message unrecognized"}))
     }
   }
 }
