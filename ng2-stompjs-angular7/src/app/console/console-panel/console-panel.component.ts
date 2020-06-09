@@ -1,6 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {ConsoleItem, SimpleCommandConsoleItem, TextConsoleItem, UnknownCommandConsoleItem} from "../model/console-item";
 import {CommandProcessor, SimpleCommandsProcessor} from "../command-processors/command-processor";
+import {ChatService} from "../../services/chat.service";
+import {IChatMessage} from "../../chat/model/chat-message";
+import {Message} from "@stomp/stompjs";
 
 @Component({
   selector: 'app-console-panel',
@@ -15,7 +18,9 @@ export class ConsolePanelComponent implements OnInit {
 
   lastConnectCommand: SimpleCommandConsoleItem = null;
 
-  constructor() {
+  constructor(
+    private chatService: ChatService
+  ){
     this.commandProcessors.push(new SimpleCommandsProcessor())
   }
 
@@ -42,15 +47,37 @@ export class ConsolePanelComponent implements OnInit {
           return;
         }
       }
-      this.logs.push(new UnknownCommandConsoleItem($event))
+
+      let sendResult = this.chatService.send($event)
+      if (!sendResult) {
+        this.logs.push(new UnknownCommandConsoleItem($event))
+      }
+
     } else if (this.mode == "pwd") {
       this.mode = "std";
-      this.connectToChat(this.lastConnectCommand);
+      this.connectToChat(this.lastConnectCommand, $event);
     }
   }
 
-  connectToChat(cmd: SimpleCommandConsoleItem){
+  connectToChat(cmd: SimpleCommandConsoleItem, passsword: string){
     this.logs.push(new TextConsoleItem("connecting..."))
+    this.chatService.connect(
+      cmd.args[0],
+      cmd.args[1],
+      passsword,
+      (message: Message) => this.onChatMessageRecieve(message)
+    )
+
   }
 
+  private onChatMessageRecieve(incomeMessage: Message) {
+    let chatMessage: IChatMessage;
+    try {
+      chatMessage = JSON.parse(incomeMessage.body) as IChatMessage;
+      this.logs.push(new TextConsoleItem(chatMessage.user + ": " + chatMessage.msg))
+    } catch (e) {
+      console.log(e)
+      this.logs.push(new TextConsoleItem("???: message unrecognized"))
+    }
+  }
 }
