@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {ConsoleItem, SimpleCommandConsoleItem, TextConsoleItem, UnknownCommandConsoleItem} from "../model/console-item";
 import {CommandProcessor, SimpleCommandsProcessor} from "../command-processors/command-processor";
 import {ChatService} from "../../services/chat.service";
-import {IChatMessage} from "../../chat/model/chat-message";
+import {IChatMessage} from "../model/chat-message";
 import {Message} from "@stomp/stompjs";
 
 @Component({

@@ -1,7 +1,0 @@
-<div>
-  <form #loginForm="ngForm" (ngSubmit)="onLoginSubmit(loginForm)" novalidate>
-    <label for="userName">login / pass:</label> <input id="userName" name="userName" ngModel required/>
-    <label for="userPass">/</label>             <input id="userPass" name="userPass" ngModel required/>
-    <input type="submit" [disabled]="loginForm.invalid"/>
-  </form>
-</div>
