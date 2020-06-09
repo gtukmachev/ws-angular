@@ -1,0 +1,6 @@
+<ul>
+  <li class="console-log-item" *ngFor="let log of logs">
+    <span *ngIf="textConsoleItem(log) as textLog">{{textLog.txt}}</span>
+    <span *ngIf="unknownCommandConsoleItem(log) as unk"><span class="minor">unknown command: </span>{{unk.command}}</span>
+  </li>
+</ul>

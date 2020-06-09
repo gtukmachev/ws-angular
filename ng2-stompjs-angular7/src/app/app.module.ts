@@ -10,6 +10,9 @@ import {SimpleMessageComponent} from './chat/simple-message/simple-message.compo
 import {LoginPanelComponent} from './chat/login-panel/login-panel.component';
 import {ChatConnectionStatusComponent} from './chat/chat-connection-status/chat-connection-status.component';
 import {ChatSendFormComponent} from './chat/chat-send-form/chat-send-form.component';
+import {ConsolePanelComponent} from './console/console-panel/console-panel.component';
+import {ConsoleInputComponent} from './console/console-input/console-input.component';
+import {ConsoleLogComponent} from './console/console-log/console-log.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +22,10 @@ import {ChatSendFormComponent} from './chat/chat-send-form/chat-send-form.compon
     SimpleMessageComponent,
     LoginPanelComponent,
     ChatConnectionStatusComponent,
-    ChatSendFormComponent
+    ChatSendFormComponent,
+    ConsolePanelComponent,
+    ConsoleInputComponent,
+    ConsoleLogComponent
   ],
   imports: [
     BrowserModule,

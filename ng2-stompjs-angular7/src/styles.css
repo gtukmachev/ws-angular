@@ -1,4 +1,27 @@
-/* You can add global styles to this file, and also import other style files */
+body.console {
+  margin: 20px;
+  background-color: #313131;
+  color: #9dd49d;
+  font-family: Consolas, monospace;
+}
+
+.minor {
+  color: #3b4f3b;
+}
+
+.console-form {
+  display: inline-block;
+  width: 100%;
+}
+
+.console-input, .console-input:focus {
+  border: none;
+  background: inherit;
+  color: inherit;
+  width: 94%;
+  outline: none;
+}
+
 ul, ol, li {
   list-style-type: none;
   padding: inherit;
@@ -16,4 +39,6 @@ ul, ol, li {
 .chat-logout-btn {
   text-align: right;
 }
+
+
 
