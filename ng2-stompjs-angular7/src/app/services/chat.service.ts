@@ -54,7 +54,7 @@ export class ChatService {
     return false;
   }
 
-  public disconnect() {
+  public disconnect(callback: () => void) {
     this.user = ""
     this.chat = ""
     this.password = ""
@@ -62,6 +62,7 @@ export class ChatService {
     this.queueName = ""
     if (this.topicSubscription) this.topicSubscription.unsubscribe();
     if (this.stompService.active) this.stompService.disconnect();
+    callback();
   }
 
 }

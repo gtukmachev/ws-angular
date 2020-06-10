@@ -1,7 +1,6 @@
 package tga.ngws.tgangwsspringbootserver
 
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
@@ -130,9 +129,9 @@ class AuthChannelInterceptorAdapter(private val webSocketAuthenticatorService: W
 
 @Configuration
 @Order(Ordered.HIGHEST_PRECEDENCE + 99)
-class WebSocketAuthenticationSecurityConfig : WebSocketMessageBrokerConfigurer {
-    @Autowired
-    lateinit var authChannelInterceptorAdapter: AuthChannelInterceptorAdapter
+class WebSocketAuthenticationSecurityConfig(
+        val authChannelInterceptorAdapter: AuthChannelInterceptorAdapter
+) : WebSocketMessageBrokerConfigurer {
 
     override fun registerStompEndpoints(registry: StompEndpointRegistry) {
         // Endpoints are already registered on WebSocketConfig, no need to add more.

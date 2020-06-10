@@ -44,9 +44,14 @@ export class ConsolePanelComponent implements OnInit {
             this.logs.push(item);
             if (item.type == "SimpleCommandConsoleItem") {
               let cmd =  (item as SimpleCommandConsoleItem).command
+
               if (cmd == "login" || cmd == "join" || cmd == "connect") {
                 this.mode = "pwd";
                 this.lastConnectCommand = (item as SimpleCommandConsoleItem);
+
+              } else if (cmd == "logout" || cmd == "exit" || cmd == "x") {
+                this.disconnectFromChat()
+
               }
             }
           }
@@ -68,12 +73,18 @@ export class ConsolePanelComponent implements OnInit {
   connectToChat(cmd: SimpleCommandConsoleItem, passsword: string){
     this.logs.push(new TextConsoleItem("connecting..."))
     this.chatService.connect(
-      cmd.args[0],
-      cmd.args[1],
+      cmd.args[0], // login
+      cmd.args[1], // chat
       passsword,
       (message: Message) => this.onChatMessageRecieve(message)
     )
+  }
 
+  disconnectFromChat(){
+    this.logs.push(new TextConsoleItem("disconnecting..."))
+    this.chatService.disconnect( () => {
+        this.logs.push(new TextConsoleItem("your are disconnected now."))
+      });
   }
 
   private onChatMessageRecieve(incomeMessage: Message) {
