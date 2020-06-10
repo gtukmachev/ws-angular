@@ -1,10 +1,14 @@
 <ul>
-  <li class="console-log-item" *ngFor="let log of logs">
+  <li class="console-log-item"
+      *ngFor="let log of logs"
+      [@simpleFadeAnimation]="'in'"
+  >
     <span *ngIf="textConsoleItem(log) as textLog">{{textLog.txt}}</span>
     <span *ngIf="unknownCommandConsoleItem(log) as unk"><span class="minor">unknown command: </span>{{unk.command}}</span>
     <span *ngIf="simpleCommandConsoleItem(log) as cmd"><span class="command">{{cmd.command}} </span>
       <span *ngFor="let arg of cmd.args" class="arg">{{arg}} </span>
     </span>
     <app-message-chat *ngIf="chatConsoleItem(log) as msg" [msg]="msg"></app-message-chat>
+    <app-message-server-chat *ngIf="serverChatConsoleItem(log) as msg" [msg]="msg"></app-message-server-chat>
   </li>
 </ul>

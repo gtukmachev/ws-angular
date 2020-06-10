@@ -47,7 +47,12 @@ export class ChatConsoleItem extends ConsoleItem {
 
   constructor(public message: IChatMessage) {
     super();
-    this.type = "ChatConsoleItem";
+    if (message.user == "server") {
+      this.type = "ServerChatConsoleItem";
+    } else {
+      this.type = "ChatConsoleItem";
+    }
+
     this.userClass = this.defineUserClass(message.user);
   }
 

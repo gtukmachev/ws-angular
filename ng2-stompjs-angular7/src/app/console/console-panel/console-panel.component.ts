@@ -10,6 +10,7 @@ import {CommandProcessor, SimpleCommandsProcessor} from "../command-processors/c
 import {ChatService} from "../../services/chat.service";
 import {IChatMessage} from "../model/chat-message";
 import {Message} from "@stomp/stompjs";
+import {Subscription, timer} from "rxjs";
 
 @Component({
   selector: 'app-console-panel',
@@ -18,11 +19,15 @@ import {Message} from "@stomp/stompjs";
 })
 export class ConsolePanelComponent implements OnInit {
 
+  static LOGS_EVICTION_PERIOD_MILLISECONDS: number = 10000
+
   logs: ConsoleItem[] = [];
   commandProcessors: CommandProcessor[] = [];
   mode: string = "std";
 
   lastConnectCommand: SimpleCommandConsoleItem = null;
+
+  private timerSubscription: Subscription
 
   constructor(
     private chatService: ChatService
@@ -33,6 +38,9 @@ export class ConsolePanelComponent implements OnInit {
   ngOnInit(): void {
     this.logs.push( new TextConsoleItem("Welcome to Secure Chat") )
     this.logs.push( new TextConsoleItem("type 'join <name> [<chat>]' to start chatting...") )
+    this.timerSubscription = timer(
+        ConsolePanelComponent.LOGS_EVICTION_PERIOD_MILLISECONDS, ConsolePanelComponent.LOGS_EVICTION_PERIOD_MILLISECONDS
+      ).subscribe( _ => this.cleanLogs())
   }
 
   onCommandSubmit($event: string) {
@@ -96,5 +104,20 @@ export class ConsolePanelComponent implements OnInit {
       console.log(e)
       this.logs.push(new ChatConsoleItem({user: "???", msg: "message unrecognized"}))
     }
+  }
+
+  private cleanLogs() {
+    if (this.logs.length == 0) return
+    let now: number = new Date().getTime()
+
+    let i = 0; while (i < this.logs.length) {
+      const oldness = Math.abs(now - this.logs[i].dt.getTime()) + 1
+      if (oldness > ConsolePanelComponent.LOGS_EVICTION_PERIOD_MILLISECONDS) {
+        this.logs.splice(i,1)
+      } else {
+        i++
+      }
+    }
+
   }
 }
