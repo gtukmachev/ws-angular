@@ -5,9 +5,6 @@
     <span *ngIf="simpleCommandConsoleItem(log) as cmd"><span class="command">{{cmd.command}} </span>
       <span *ngFor="let arg of cmd.args" class="arg">{{arg}} </span>
     </span>
-    <span *ngIf="chatConsoleItem(log) as msg">
-      <span class="user">{{msg.message.user}}: </span>
-      <span class="message">{{msg.message.msg}} </span>
-    </span>
+    <app-message-chat *ngIf="chatConsoleItem(log) as msg" [msg]="msg"></app-message-chat>
   </li>
 </ul>
