@@ -1,9 +1,9 @@
 <form class="console-form" #inputForm="ngForm" (ngSubmit)="submitCommand()" novalidate>
   <div *ngIf="mode == 'std'">
-    <label for="commandInput">></label><input class="console-input" id="commandInput" name="commandInput" [(ngModel)]="commandInputText" required autofocus/>
+    <label for="commandInput">></label><input #inputField class="console-input" id="commandInput" name="commandInput" [(ngModel)]="commandInputText" required autofocus/>
   </div>
   <div *ngIf="mode == 'pwd'">
-    <label for="commandInput">password></label><input type="password" class="console-input" id="passwordInput" name="passwordInput" [(ngModel)]="commandInputText" required autofocus/>
+    <label for="commandInput">password></label><input #pwdField type="password" class="console-input" id="passwordInput" name="passwordInput" [(ngModel)]="commandInputText" required/>
   </div>
   <input type="submit" [disabled]="inputForm.invalid" hidden/>
 </form>

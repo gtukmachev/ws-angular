@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {
   ChatConsoleItem,
   ConsoleItem,
@@ -11,6 +11,7 @@ import {ChatService} from "../../services/chat.service";
 import {IChatMessage} from "../model/chat-message";
 import {Message} from "@stomp/stompjs";
 import {Subscription, timer} from "rxjs";
+import {ConsoleInputComponent} from "../console-input/console-input.component";
 
 @Component({
   selector: 'app-console-panel',
@@ -28,6 +29,8 @@ export class ConsolePanelComponent implements OnInit {
   lastConnectCommand: SimpleCommandConsoleItem = null;
 
   private timerSubscription: Subscription
+
+  @ViewChild(ConsoleInputComponent) consoleInputComponent: ConsoleInputComponent;
 
   constructor(
     private chatService: ChatService
@@ -56,6 +59,7 @@ export class ConsolePanelComponent implements OnInit {
               if (cmd == "login" || cmd == "join" || cmd == "connect") {
                 this.mode = "pwd";
                 this.lastConnectCommand = (item as SimpleCommandConsoleItem);
+                timer(200).subscribe( _ => this.consoleInputComponent.focusPwd() )
 
               } else if (cmd == "logout" || cmd == "exit" || cmd == "x") {
                 this.disconnectFromChat()
@@ -75,6 +79,7 @@ export class ConsolePanelComponent implements OnInit {
     } else if (this.mode == "pwd") {
       this.mode = "std";
       this.connectToChat(this.lastConnectCommand, $event);
+      timer(200).subscribe( _ => this.consoleInputComponent.focusInput() )
     }
   }
 
