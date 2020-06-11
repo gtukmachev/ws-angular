@@ -2,18 +2,18 @@ import {ConsoleItem, SimpleCommandConsoleItem} from "../model/console-item";
 
 export abstract class CommandProcessor {
 
-  abstract process(command: string): ConsoleItem[];
+  abstract parse(command: string): ConsoleItem[];
 
 }
 
 export class SimpleCommandsProcessor implements CommandProcessor{
 
-  private availableCommands: string[] = ["login", "join", "connect", "logout", "exit", "x"]
+  private availableCommands: string[] = ["login", "join", "connect", "logout", "exit", "x", "evict", "delay", "help", "/?", "/", "cls"]
 
   constructor() {
   }
 
-  process(command: string): ConsoleItem[] {
+  parse(command: string): ConsoleItem[] {
     if (command == null) return null;
     let lc = command.trim().toLocaleLowerCase()
 

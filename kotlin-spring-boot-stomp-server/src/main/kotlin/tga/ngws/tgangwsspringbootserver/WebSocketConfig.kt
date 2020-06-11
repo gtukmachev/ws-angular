@@ -117,12 +117,19 @@ class AuthChannelInterceptorAdapter(private val webSocketAuthenticatorService: W
         log.trace("preSend( message = '$message', channel = '$channel')")
 
         val accessor: StompHeaderAccessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor::class.java)!!
-        if (StompCommand.CONNECT == accessor.command) {
-            val username = accessor.getFirstNativeHeader(USERNAME_HEADER)
-            val password = accessor.getFirstNativeHeader(PASSWORD_HEADER)
-            val user = webSocketAuthenticatorService.getAuthenticatedOrFail(username, password)
-            accessor.user = user
+        when(accessor.command) {
+            StompCommand.CONNECT -> {
+                val username = accessor.getFirstNativeHeader(USERNAME_HEADER)
+                val password = accessor.getFirstNativeHeader(PASSWORD_HEADER)
+                val user = webSocketAuthenticatorService.getAuthenticatedOrFail(username, password)
+                accessor.user = user
+            }
+            StompCommand.UNSUBSCRIBE -> {
+                val a = 1;
+            }
+            else -> { }
         }
+
         return message
     }
 }
