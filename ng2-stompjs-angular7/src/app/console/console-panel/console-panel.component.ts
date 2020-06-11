@@ -107,10 +107,16 @@ export class ConsolePanelComponent implements OnInit {
 
   connectToChat(cmd: SimpleCommandConsoleItem, passsword: string){
     this.logs.push(new TextConsoleItem("connecting..."))
+
+    function getArg(i: number): string {
+      if (i < cmd.args.length) return cmd.args[i]
+      return null
+    }
+
     this.chatService.connect(
-      cmd.args[0], // login
-      cmd.args[1], // chat
+      getArg(0), // login
       passsword,
+      getArg(1), // chat
       (message: Message) => this.onChatMessageRecieve(message)
     )
   }

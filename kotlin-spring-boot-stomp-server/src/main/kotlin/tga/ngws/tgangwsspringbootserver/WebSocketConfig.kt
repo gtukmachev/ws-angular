@@ -13,13 +13,14 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor
 import org.springframework.messaging.support.ChannelInterceptor
 import org.springframework.messaging.support.MessageHeaderAccessor
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException
+import org.springframework.security.authentication.AuthenticationServiceException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.config.annotation.web.messaging.MessageSecurityMetadataSourceRegistry
 import org.springframework.security.config.annotation.web.socket.AbstractSecurityWebSocketMessageBrokerConfigurer
 import org.springframework.security.config.http.SessionCreationPolicy
-import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.stereotype.Component
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry
@@ -63,26 +64,27 @@ class WebSocketAuthenticatorService {
     // This method MUST return a UsernamePasswordAuthenticationToken instance,
     // the spring security chain is testing it with 'instanceof' later on.
     // So don't use a subclass of it or any other class
-    fun getAuthenticatedOrFail(username: String?, password: String?): UsernamePasswordAuthenticationToken {
+    fun getAuthenticatedOrFail(
+                username: String?,
+                password: String?,
+                chat: String?
+    ): UsernamePasswordAuthenticationToken {
         log.trace("getAuthenticatedOrFail($username, $password)")
 
-        if (username.isNullOrBlank()) throw AuthenticationCredentialsNotFoundException("Username was null or empty.")
-        if (password.isNullOrBlank()) throw AuthenticationCredentialsNotFoundException("Password was null or empty.")
+        if (username.isNullOrBlank()) throw AuthenticationCredentialsNotFoundException("Username can not be null or empty.")
+        if (password.isNullOrBlank()) throw AuthenticationCredentialsNotFoundException("Password can not be null or empty.")
+        if (password.isNullOrBlank()) throw AuthenticationCredentialsNotFoundException("Chat can not be null or empty.")
 
-        // Add your own logic for retrieving user in fetchUserFromDb()
-/*
-        if ( !(username == "admin" && password == "pass") ) {
-            throw BadCredentialsException("Bad credentials for user $username")
-        }
-*/
-
-        // null credentials, we do not pass the password along
         return UsernamePasswordAuthenticationToken(
                 username,
                 password,
-                listOf(GrantedAuthority { "USER" }) // MUST provide at least one role
-        )
+                listOf ( // MUST provide at least one role
+                        SimpleGrantedAuthority("ROLE_USER"),
+                        SimpleGrantedAuthority("ROLE_CHAT:$chat/$password")
+                )
+            )
     }
+
 }
 
 @Configuration
@@ -99,7 +101,6 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
                 .authorizeRequests()
                     .antMatchers("/stomp").permitAll()
                     .antMatchers("/stomp/**").permitAll()
-                    .antMatchers("/adm/msg").permitAll()
                     .anyRequest().denyAll()
     }
 }
@@ -109,8 +110,6 @@ class AuthChannelInterceptorAdapter(private val webSocketAuthenticatorService: W
 
     companion object {
         private val log = LoggerFactory.getLogger(AuthChannelInterceptorAdapter::class.java)
-        private const val USERNAME_HEADER = "login"
-        private const val PASSWORD_HEADER = "pass"
     }
 
     override fun preSend(message: Message<*>, channel: MessageChannel): Message<*> {
@@ -119,13 +118,32 @@ class AuthChannelInterceptorAdapter(private val webSocketAuthenticatorService: W
         val accessor: StompHeaderAccessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor::class.java)!!
         when(accessor.command) {
             StompCommand.CONNECT -> {
-                val username = accessor.getFirstNativeHeader(USERNAME_HEADER)
-                val password = accessor.getFirstNativeHeader(PASSWORD_HEADER)
-                val user = webSocketAuthenticatorService.getAuthenticatedOrFail(username, password)
+                val username = accessor.getFirstNativeHeader("login")
+                val password = accessor.getFirstNativeHeader("pass")
+                val chat = accessor.getFirstNativeHeader("chat")
+                val user = webSocketAuthenticatorService.getAuthenticatedOrFail(username, password, chat)
                 accessor.user = user
             }
-            StompCommand.UNSUBSCRIBE -> {
-                val a = 1;
+            StompCommand.SUBSCRIBE -> {
+                val topic = accessor.destination ?: throw AuthenticationServiceException("Subscription declined 0");
+                val chatName: String =
+                        when {
+                            topic.startsWith("/topic/chat/messages/")      -> topic.substring("/topic/chat/messages/".length)
+                            topic.startsWith("/topic/chat/notifications/") -> topic.substring("/topic/chat/notifications/".length)
+                            else -> throw AuthenticationServiceException("Subscription declined 1")
+                        }
+
+                val chatRoleAssigned =
+                        when (val user = accessor.user) {
+                            is UsernamePasswordAuthenticationToken -> user.authorities.any {
+                                it.authority.startsWith("ROLE_CHAT:")
+                                &&
+                                it.authority.substring("ROLE_CHAT:".length) == chatName
+                            }
+                            else ->  false
+                        }
+
+                if (!chatRoleAssigned) throw AuthenticationServiceException("Subscription declined 2")
             }
             else -> { }
         }

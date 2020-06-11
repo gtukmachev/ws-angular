@@ -21,19 +21,27 @@ export class ChatService {
   ) {
   }
 
-  public connect(user: string, chat: string, password: string, messagesHandler: (Message) => void) {
+  public connect(
+        user: string,
+        password: string,
+        chat: string,
+        messagesHandler: (Message) => void
+  ) {
+    this.disconnect( () => {} )
+
     this.user = user;
     this.chat = chat;
     this.password = password;
-    this.topicName = `/topic/chat/messages/${chat}/${password}`
-    this.queueName = `/queue/chat/messages/${chat}/${password}`
-
-    if (this.topicSubscription) this.topicSubscription.unsubscribe();
-    if (this.stompService.active) this.stompService.disconnect();
+    this.queueName = `/queue/chat/messages/${chat}/${password}`;
+    this.topicName = `/topic/chat/messages/${chat}/${password}`;
 
     this.stompService.config = {
       url: () => new SockJS("http://127.0.0.1:8080/stomp"),
-      headers: {login: user, pass: password},
+      headers: {
+                  login: user,
+                  pass: password,
+                  chat: chat
+               },
       heartbeat_in: 0, // Typical value 0 - disabled
       heartbeat_out: 20000, // Typical value 20000 - every 20 seconds
       reconnect_delay: 3000,
@@ -55,13 +63,13 @@ export class ChatService {
   }
 
   public disconnect(callback: () => void) {
+    if (this.topicSubscription) this.topicSubscription.unsubscribe();
+    if (this.stompService.active) this.stompService.disconnect();
     this.user = ""
     this.chat = ""
     this.password = ""
     this.topicName = ""
     this.queueName = ""
-    if (this.topicSubscription) this.topicSubscription.unsubscribe();
-    if (this.stompService.active) this.stompService.disconnect();
     callback();
   }
 
