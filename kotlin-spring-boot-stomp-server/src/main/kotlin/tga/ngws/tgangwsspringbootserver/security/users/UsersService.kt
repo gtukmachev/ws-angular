@@ -1,4 +1,4 @@
-package tga.ngws.tgangwsspringbootserver
+package tga.ngws.tgangwsspringbootserver.security.users
 
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled

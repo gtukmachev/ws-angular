@@ -1,4 +1,4 @@
-package tga.ngws.tgangwsspringbootserver
+package tga.ngws.tgangwsspringbootserver.security
 
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Configuration
@@ -7,7 +7,6 @@ import org.springframework.core.annotation.Order
 import org.springframework.messaging.Message
 import org.springframework.messaging.MessageChannel
 import org.springframework.messaging.simp.config.ChannelRegistration
-import org.springframework.messaging.simp.config.MessageBrokerRegistry
 import org.springframework.messaging.simp.stomp.StompCommand
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor
 import org.springframework.messaging.support.ChannelInterceptor
@@ -22,31 +21,36 @@ import org.springframework.security.config.annotation.web.socket.AbstractSecurit
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.stereotype.Component
-import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer
+import tga.ngws.tgangwsspringbootserver.security.users.UsersService
 import java.security.Principal
-
-
-@Configuration
-@EnableWebSocketMessageBroker
-class WebSocketStompEndpointsConfig : WebSocketMessageBrokerConfigurer {
-    override fun registerStompEndpoints(registry: StompEndpointRegistry) {
-        registry.addEndpoint("/stomp")
-                .setAllowedOrigins("*")
-                .withSockJS()
-    }
-
-    override fun configureMessageBroker(config: MessageBrokerRegistry) {
-        config.enableSimpleBroker("/topic")
-    }
-}
 
 /**
  * Many thanks to Anthony Raymond
  * for the explanation of the security configuring:
  * [https://stackoverflow.com/questions/45405332/websocket-authentication-and-authorization-in-spring]
  */
+
+
+@Configuration
+class WebSecurityConfig : WebSecurityConfigurerAdapter() {
+    private val log = LoggerFactory.getLogger(WebSecurityConfig::class.java)
+
+    // Since the Stomp protocol rely on a first HTTP Request, we'll need to authorize HTTP call to our stomp handshake endpoint.
+    override fun configure(http: HttpSecurity) {
+        log.trace("configure(http)")
+        // This is not for websocket authorization, and this should most likely not be altered.
+        http
+                .httpBasic().disable()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+                .authorizeRequests()
+                    .antMatchers("/stomp").permitAll()
+                    .antMatchers("/stomp/**").permitAll()
+                    .anyRequest().denyAll()
+    }
+}
+
 @Configuration
 class WebSocketAuthorizationSecurityConfig : AbstractSecurityWebSocketMessageBrokerConfigurer() {
     override fun configureInbound(messages: MessageSecurityMetadataSourceRegistry) {
@@ -54,7 +58,7 @@ class WebSocketAuthorizationSecurityConfig : AbstractSecurityWebSocketMessageBro
         messages.anyMessage().authenticated()
     }
 
-    // TODO: For test purpose (and simplicity) i disabled CSRF, but you should re-enable this and provide a CRSF endpoint.
+    // TODO: For test purpose (and simplicity) I disabled CSRF, but you should re-enable this and provide a CRSF endpoint.
     override fun sameOriginDisabled(): Boolean {
         return true
     }
@@ -66,7 +70,7 @@ class WebSocketAuthenticatorService {
     private val allowedSubscriptionChannels = listOf(
             "/topic/chat/messages/",
             "/topic/chat/notifications/"
-        )
+    )
 
     private val allowedSendChannels = listOf(
             "/queue/chat/messages/"
@@ -77,15 +81,16 @@ class WebSocketAuthenticatorService {
     // the spring security chain is testing it with 'instanceof' later on.
     // So don't use a subclass of it or any other class
     fun getAuthenticatedOrFail(
-                username: String?,
-                password: String?,
-                chat: String?
+            username: String?,
+            password: String?,
+            chat: String?
     ): UsernamePasswordAuthenticationToken {
         log.trace("getAuthenticatedOrFail($username, $password)")
 
         if (username.isNullOrBlank()) throw AuthenticationCredentialsNotFoundException("Username can not be null or empty.")
         if (password.isNullOrBlank()) throw AuthenticationCredentialsNotFoundException("Password can not be null or empty.")
-        if (password.isNullOrBlank()) throw AuthenticationCredentialsNotFoundException("Chat can not be null or empty.")
+        if (chat.isNullOrBlank()    ) throw AuthenticationCredentialsNotFoundException("Chat can not be null or empty.")
+        if (chat.contains('*')      ) throw AuthenticationCredentialsNotFoundException("Chat name should not contain '*' symbol.")
 
         return UsernamePasswordAuthenticationToken(
                 username,
@@ -94,7 +99,7 @@ class WebSocketAuthenticatorService {
                         SimpleGrantedAuthority("ROLE_USER"),
                         SimpleGrantedAuthority("ROLE_CHAT:$chat/$password")
                 )
-            )
+        )
     }
 
     private fun checkOrRiseError(principal: Principal?, topic: String?, allowedChannels: List<String>, action: String) {
@@ -119,24 +124,6 @@ class WebSocketAuthenticatorService {
 
     fun allowSendOrRiseError(principal: Principal?, topic: String?) = checkOrRiseError(principal, topic, allowedSendChannels, "Send message")
 
-}
-
-@Configuration
-class WebSecurityConfig : WebSecurityConfigurerAdapter() {
-    private val log = LoggerFactory.getLogger(WebSecurityConfig::class.java)
-
-    // Since the Stomp protocol rely on a first HTTP Request, we'll need to authorize HTTP call to our stomp handshake endpoint.
-    override fun configure(http: HttpSecurity) {
-        log.trace("configure(http)")
-        // This is not for websocket authorization, and this should most likely not be altered.
-        http
-                .httpBasic().disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                .authorizeRequests()
-                    .antMatchers("/stomp").permitAll()
-                    .antMatchers("/stomp/**").permitAll()
-                    .anyRequest().denyAll()
-    }
 }
 
 @Component
