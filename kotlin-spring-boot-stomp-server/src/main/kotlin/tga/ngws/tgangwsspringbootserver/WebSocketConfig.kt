@@ -25,6 +25,8 @@ import org.springframework.stereotype.Component
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer
+import java.security.Principal
+
 
 @Configuration
 @EnableWebSocketMessageBroker
@@ -60,6 +62,16 @@ class WebSocketAuthorizationSecurityConfig : AbstractSecurityWebSocketMessageBro
 
 @Component
 class WebSocketAuthenticatorService {
+
+    private val allowedSubscriptionChannels = listOf(
+            "/topic/chat/messages/",
+            "/topic/chat/notifications/"
+        )
+
+    private val allowedSendChannels = listOf(
+            "/queue/chat/messages/"
+    )
+
     private val log = LoggerFactory.getLogger(WebSocketAuthenticatorService::class.java)
     // This method MUST return a UsernamePasswordAuthenticationToken instance,
     // the spring security chain is testing it with 'instanceof' later on.
@@ -85,6 +97,28 @@ class WebSocketAuthenticatorService {
             )
     }
 
+    private fun checkOrRiseError(principal: Principal?, topic: String?, allowedChannels: List<String>, action: String) {
+        if ( principal == null     ) throw AuthenticationServiceException("$action declined: User is not defined!")
+        if ( topic.isNullOrEmpty() ) throw AuthenticationServiceException("$action declined: Topic is not defined!")
+        if ( topic.contains("*")   ) throw AuthenticationServiceException("$action declined: Topic contains '*' symbols!")
+
+        if (principal !is UsernamePasswordAuthenticationToken)  throw AuthenticationServiceException("$action declined: User is not recognized!")
+
+        val channel = allowedChannels.find { topic.startsWith(it) }
+                ?: throw AuthenticationServiceException("$action declined: unexpected messages channel!")
+
+        val chatName = topic.substring(channel.length)
+        val requiredAuthority = "ROLE_CHAT:$chatName"
+
+        val chatRoleAssigned = principal.authorities.any { it.authority == requiredAuthority }
+
+        if (!chatRoleAssigned) throw AuthenticationServiceException("$action declined: Not enough permissions to work with the chat!")
+    }
+
+    fun allowSubscriptionOrRiseError(principal: Principal?, topic: String?) = checkOrRiseError(principal, topic, allowedSubscriptionChannels, "Subscription")
+
+    fun allowSendOrRiseError(principal: Principal?, topic: String?) = checkOrRiseError(principal, topic, allowedSendChannels, "Send message")
+
 }
 
 @Configuration
@@ -106,7 +140,10 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
 }
 
 @Component
-class AuthChannelInterceptorAdapter(private val webSocketAuthenticatorService: WebSocketAuthenticatorService) : ChannelInterceptor {
+class AuthChannelInterceptorAdapter(
+        private val authService: WebSocketAuthenticatorService,
+        private val userService: UsersService
+) : ChannelInterceptor {
 
     companion object {
         private val log = LoggerFactory.getLogger(AuthChannelInterceptorAdapter::class.java)
@@ -121,30 +158,14 @@ class AuthChannelInterceptorAdapter(private val webSocketAuthenticatorService: W
                 val username = accessor.getFirstNativeHeader("login")
                 val password = accessor.getFirstNativeHeader("pass")
                 val chat = accessor.getFirstNativeHeader("chat")
-                val user = webSocketAuthenticatorService.getAuthenticatedOrFail(username, password, chat)
+                val user = authService.getAuthenticatedOrFail(username, password, chat)
                 accessor.user = user
             }
             StompCommand.SUBSCRIBE -> {
-                val topic = accessor.destination ?: throw AuthenticationServiceException("Subscription declined 0");
-                val chatName: String =
-                        when {
-                            topic.startsWith("/topic/chat/messages/")      -> topic.substring("/topic/chat/messages/".length)
-                            topic.startsWith("/topic/chat/notifications/") -> topic.substring("/topic/chat/notifications/".length)
-                            else -> throw AuthenticationServiceException("Subscription declined 1")
-                        }
-
-                val chatRoleAssigned =
-                        when (val user = accessor.user) {
-                            is UsernamePasswordAuthenticationToken -> user.authorities.any {
-                                it.authority.startsWith("ROLE_CHAT:")
-                                &&
-                                it.authority.substring("ROLE_CHAT:".length) == chatName
-                            }
-                            else ->  false
-                        }
-
-                if (!chatRoleAssigned) throw AuthenticationServiceException("Subscription declined 2")
+                authService.allowSubscriptionOrRiseError(accessor.user, accessor.destination)
+                userService.addUser(accessor.user, accessor.destination)
             }
+            StompCommand.SEND      -> authService.allowSendOrRiseError(accessor.user, accessor.destination)
             else -> { }
         }
 

@@ -20,7 +20,7 @@ import {ConsoleInputComponent} from "../console-input/console-input.component";
 })
 export class ConsolePanelComponent implements OnInit {
 
-  static LOGS_EVICTION_PERIOD_SECONDS: number = 10
+  static LOGS_EVICTION_PERIOD_SECONDS: number = 0
 
   logs: ConsoleItem[] = [];
   commandProcessors: CommandProcessor[] = [];
